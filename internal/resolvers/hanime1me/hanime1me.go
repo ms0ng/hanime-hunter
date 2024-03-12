@@ -228,6 +228,9 @@ func getDLInfo(vid string) (map[string]*resolvers.Video, []string, error) {
 		if err != nil {
 			return nil, nil, err
 		}
+		if ext == "octet-stream" {
+			ext = "mp4"
+		}
 
 		episodes = append(episodes, title)
 		log.Debugf("Video found: %s - %s - %s", title, quality, ext)
