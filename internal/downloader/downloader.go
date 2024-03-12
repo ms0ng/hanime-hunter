@@ -305,6 +305,9 @@ func saveTS(path, u string, key, iv []byte) error {
 	if err != nil {
 		return fmt.Errorf("download TS file: %w", err)
 	}
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("404 not found, please check if this video can be played online")
+	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
