@@ -13,6 +13,8 @@ const (
 type ProgressMsg struct {
 	FileName string
 	Ratio    float64
+	Speed    int64
+	DLTime   float64
 }
 
 type ProgressCompleteMsg struct{}
@@ -53,6 +55,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) { //nolint:cyclop
 		fileName, ratio := msg.FileName, msg.Ratio
 		if pb, ok := m.Pbs[fileName]; ok {
 			cmds = append(cmds, pb.Progress.SetPercent(ratio))
+			pb.Pw.Speed = msg.Speed
+			pb.Pw.DLTime = msg.DLTime
 		}
 		return m, tea.Batch(cmds...)
 

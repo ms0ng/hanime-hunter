@@ -402,12 +402,15 @@ func countProgressBar(p *tea.Program, total int64, fileName string) *progressbar
 
 func progressBar(p *tea.Program, total int64, fileName string) *progressbar.ProgressBar {
 	pw := &progressbar.ProgressWriter{
-		FileName: fileName,
-		Total:    total,
-		OnProgress: func(fileName string, ratio float64) {
+		FileName:  fileName,
+		Total:     total,
+		StartTime: time.Now(),
+		OnProgress: func(fileName string, ratio, dltime float64, speed int64) {
 			p.Send(progressbar.ProgressMsg{
 				FileName: fileName,
 				Ratio:    ratio,
+				DLTime:   dltime,
+				Speed:    speed,
 			})
 		},
 	}

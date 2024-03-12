@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
+	"github.com/acgtools/hanime-hunter/pkg/util"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -59,7 +61,7 @@ func (m *Model) View() string {
 		if pb.Pc != nil {
 			stats = fmt.Sprintf("%d/%d", pb.Pc.Downloaded.Load(), pb.Pc.Total)
 		} else {
-			stats = getDLStatus(pb.Pw.Downloaded, pb.Pw.Total)
+			stats = getDLStatus(pb.Pw)
 		}
 
 		status := renderPbStatus(pb.Status)
@@ -110,6 +112,7 @@ func pbMapToSortedSlice(m map[string]*ProgressBar, w int) []*ProgressBar {
 	return res
 }
 
-func getDLStatus(downloaded, total int64) string {
-	return fmt.Sprintf("%.2f MiB/%.2f MiB", float64(downloaded)/mib, float64(total)/mib)
+func getDLStatus(pw *ProgressWriter) string {
+	d := time.Duration(pw.DLTime) * time.Second
+	return fmt.Sprintf("%.2f MiB/%.2f MiB %s %s", float64(pw.Downloaded)/mib, float64(pw.Total)/mib, util.FormatSize(pw.Speed), d.String())
 }

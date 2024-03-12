@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -40,7 +41,10 @@ type ProgressWriter struct {
 	File       *os.File
 	Reader     io.Reader
 	FileName   string
-	OnProgress func(string, float64)
+	StartTime  time.Time
+	Speed      int64
+	DLTime     float64
+	OnProgress func(string, float64, float64, int64)
 }
 
 func (pw *ProgressWriter) Start(p *tea.Program) (int64, error) {
@@ -60,7 +64,18 @@ func (pw *ProgressWriter) Start(p *tea.Program) (int64, error) {
 func (pw *ProgressWriter) Write(p []byte) (int, error) {
 	pw.Downloaded += int64(len(p))
 	if pw.Total > 0 && pw.OnProgress != nil {
-		pw.OnProgress(pw.FileName, float64(pw.Downloaded)/float64(pw.Total))
+		t := int64(time.Since(pw.StartTime).Seconds())
+		var speed int64
+		if t > 0 {
+			speed = pw.Downloaded / t
+		}
+
+		var dltime float64
+		if speed > 0 {
+			dltime = float64((pw.Total - pw.Downloaded) / speed)
+		}
+
+		pw.OnProgress(pw.FileName, float64(pw.Downloaded)/float64(pw.Total), dltime, speed)
 	}
 	return len(p), nil
 }
