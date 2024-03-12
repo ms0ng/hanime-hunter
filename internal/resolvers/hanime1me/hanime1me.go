@@ -96,6 +96,10 @@ func (re *resolver) Resolve(u string, opt *resolvers.Option) ([]*resolvers.HAnim
 	return res, nil
 }
 
+func removeDirInvalidSymbol(title string) string {
+	return util.ReplaceChars(title, util.InvalidDirSymbols[:])
+}
+
 func resolvePlaylist(u string) ([]*resolvers.HAnime, error) {
 	doc, err := util.GetHTMLPage(newClient(), u, map[string]string{"User-Agent": resolvers.UA})
 	if err != nil {
@@ -217,6 +221,7 @@ func getDLInfo(vid string) (map[string]*resolvers.Video, []string, error) {
 	for _, a := range aTags {
 		link := util.GetAttrVal(a, "href")
 		title := util.GetAttrVal(a, "download")
+		title = removeDirInvalidSymbol(title) // remove invalid symbols
 
 		id := getID(link)
 		quality := ""
