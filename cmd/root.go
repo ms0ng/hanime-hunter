@@ -16,6 +16,9 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
+	oldMask := syscall.Umask(0)
+	fmt.Printf("Current UMASK: %04o\n", oldMask)
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
