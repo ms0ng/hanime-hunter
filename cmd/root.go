@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"os"
-	"fmt"
-	"syscall"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -17,9 +15,6 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
-
-	oldMask := syscall.Umask(0)
-	fmt.Printf("Current UMASK: %04o\n", oldMask)
 
 	err := rootCmd.Execute()
 	if err != nil {
